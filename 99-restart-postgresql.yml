@@ -1,0 +1,10 @@
+---
+
+- hosts: database
+  become: true
+  tasks:
+
+    - name: Restart postgresql
+      service:
+       name: postgresql
+       state: restarted

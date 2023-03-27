@@ -1,0 +1,27 @@
+---
+#should be executed after setting password encryption to scram-sha-256 manually
+- hosts: database
+  become: true
+  tasks:
+
+  - name: drop user if exists
+    shell: 'psql postgres -c "DROP USER IF EXISTS moodle"'
+    become_user: postgres
+    ignore_errors: yes
+
+  - name: create user moodle
+    shell: 'psql postgres -c "CREATE USER moodle"'
+    become_user: postgres
+    ignore_errors: yes
+
+  - name: create database moodle
+    shell: 'psql postgres -c "CREATE DATABASE moodle"'
+    become_user: postgres
+    ignore_errors: yes
+
+  - name: grant moodle user access to moodle db
+    shell: 'psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE moodle to moodle"'
+    become_user: postgres
+    ignore_errors: yes
+#manually set the password after
+#manually set application name
