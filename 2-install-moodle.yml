@@ -31,7 +31,7 @@
   - name: Copy config-dist.php
     template:
      src:  config-dist.php
-     dest: /var/www/html/moodle/config-dist.php
+     dest: /var/www/html/moodle/config.php
      mode: 0755
      owner: root
      group: root

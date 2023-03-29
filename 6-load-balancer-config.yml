@@ -1,0 +1,59 @@
+---
+- hosts: load_balancer
+  become: true
+  become_user: root
+  tasks:
+
+  - name: Install nginx
+    apt:
+      name:
+       - nginx
+      state: latest
+      update_cache: yes
+
+  - name: Install keepalived
+    apt:
+      name:
+       - keepalived
+      state: latest
+      update_cache: yes
+
+  - name: Install letsencrypt certbot
+    apt:
+      name:
+       - certbot
+       - python3-certbot-nginx
+      state: latest
+      update_cache: yes
+
+  - name: Install libipset13
+    apt:
+      name:
+       - libipset13
+      state: latest
+      update_cache: yes
+
+  - name: Copy load-balancer.conf
+    template:
+       src: load-balancer.conf
+       dest: /etc/nginx/sites-enabled/load-balancer.conf
+       mode: 0644
+       owner: root
+       group: root
+
+  - name: Restart nginx
+    service:
+      name: nginx
+      state: restarted
+
+  - name: Setup obtain ssl/tls certificate #should be installed per lb turn off existing lb that already has certificate then turn it on after the certificate was issued to the next lb vm
+    shell: |
+     sudo certbot --nginx --agree-tos --email dggabriel@up.edu.ph --redirect --non-interactive -d lbm.dilc.info -d lbm.dilc.info
+    args:
+     warn: no
+
+  - name: automatically renew lets encrypt certicate
+    blockinfile:
+     dest: /etc/crontab
+     block: |
+      0 12 * * * /usr/bin/certbot renew --quiet

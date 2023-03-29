@@ -137,7 +137,7 @@ $CFG->dboptions = array(
 // If you need both intranet and Internet access please read
 // http://docs.moodle.org/en/masquerading
 
-$CFG->wwwroot   = 'https://lbm.dilc.info/';
+$CFG->wwwroot   = 'lbm.dilc.info';
 
 
 //=========================================================================
