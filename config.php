@@ -137,7 +137,7 @@ $CFG->dboptions = array(
 // If you need both intranet and Internet access please read
 // http://docs.moodle.org/en/masquerading
 
-$CFG->wwwroot   = 'lbm.dilc.info';
+$CFG->wwwroot   = 'https://lbm.dilc.info/moodle';
 
 
 //=========================================================================
@@ -168,7 +168,9 @@ $CFG->dataroot  = '/var/moodledata';
 // NOTE: the prefixed 0 is important, and don't use quotes.
 
 $CFG->directorypermissions = 02777;
-
+$CFG->reverseproxy = true;
+$CFG->sslproxy  = 1;
+//$CFG->directorypermissions = 00777;  // try 02777 on a server in Safe Mode
 
 //=========================================================================
 // 5. ADMIN DIRECTORY LOCATION  (deprecated)
