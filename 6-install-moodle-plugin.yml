@@ -2,16 +2,28 @@
 - hosts: web_servers
   become: true
   become_user: root
+
+  vars:
+    url: "https://moodle.org/plugins/download.php/28854/format_topcoll_moodle41_2022112601.zip"
+    filename: "{{ url | basename }}"
   tasks:
+
+  - name: Check if directory exist
+    stat:
+      path: "/var/www/html/moodle/{{filename.split('_').0}}"
+    register: register_name
+
+  - name: Create directory if it doesnt exist
+    file:
+      path: "/var/www/html/moodle{{filename.split('_').0}}"
+      state: touch
+    when: not register_name.stat.exists
 
   - name: get/pull plugin
     shell: |
-     sudo certbot --nginx --agree-tos --email dggabriel@up.edu.ph --redirect --non-interactive -d lbm.dilc.info -d lbm.dilc.info
+     cd /var/www/html/moodle/{{filename.split('_').0}}
+     wget {{url}}
+     unzip {{filename}}
+     sudo rm {{filename}}
     args:
      warn: no
-
-  - name: automatically renew lets encrypt certicate
-    blockinfile:
-     dest: /etc/crontab
-     block: |
-      0 12 * * * /usr/bin/certbot renew --quiet
