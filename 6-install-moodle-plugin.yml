@@ -4,18 +4,18 @@
   become_user: root
 
   vars:
-    url: "https://moodle.org/plugins/download.php/28854/format_topcoll_moodle41_2022112601.zip"
-    course_type: "course"
+    url: "https://moodle.org/plugins/download.php/28571/mod_zoom_moodle41_2023021400.zip"
+    course_type: "mod"
     filename: "{{ url | basename }}"
     foldername: "{{filename.split('_').0}}"
-    search_path: "/var/www/html/moodle/{{course_type}}"
+    search_path: "/var/www/html/moodle/"
   
   tasks:
   - name: Find directory using patterns
     ansible.builtin.find:
       paths: "{{ search_path }}/"
       file_type: directory
-      patterns: "{{ foldername }}*"
+      patterns: "{{ course_type }}"
       recurse: yes
     register: find_matches
 
