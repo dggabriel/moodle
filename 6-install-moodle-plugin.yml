@@ -1,0 +1,17 @@
+---
+- hosts: web_servers
+  become: true
+  become_user: root
+  tasks:
+
+  - name: get/pull plugin
+    shell: |
+     sudo certbot --nginx --agree-tos --email dggabriel@up.edu.ph --redirect --non-interactive -d lbm.dilc.info -d lbm.dilc.info
+    args:
+     warn: no
+
+  - name: automatically renew lets encrypt certicate
+    blockinfile:
+     dest: /etc/crontab
+     block: |
+      0 12 * * * /usr/bin/certbot renew --quiet
