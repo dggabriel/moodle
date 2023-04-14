@@ -5,25 +5,29 @@
 
   vars:
     url: "https://moodle.org/plugins/download.php/28854/format_topcoll_moodle41_2022112601.zip"
+    course_type: "course"
     filename: "{{ url | basename }}"
+    foldername: "{{filename.split('_').0}}"
+    search_path: "/var/www/html/moodle/{{course_type}}"
+  
   tasks:
+  - name: Find directory using patterns
+    ansible.builtin.find:
+      paths: "{{ search_path }}/"
+      file_type: directory
+      patterns: "{{ foldername }}*"
+      recurse: yes
+    register: find_matches
 
-  - name: Check if directory exist
-    stat:
-      path: "/var/www/html/moodle/{{filename.split('_').0}}"
-    register: register_name
+  - name: Print return information from the previous task
+    ansible.builtin.debug:
+      var: find_matches.files[0].path
+    when: find_matches is defined
 
-  - name: Create directory if it doesnt exist
-    file:
-      path: "/var/www/html/moodle{{filename.split('_').0}}"
-      state: touch
-    when: not register_name.stat.exists
-
-  - name: get/pull plugin
+  - name: install plugin
     shell: |
-     cd /var/www/html/moodle/{{filename.split('_').0}}
-     wget {{url}}
-     unzip {{filename}}
-     sudo rm {{filename}}
-    args:
-     warn: no
+      cd {{ item.path }}
+      wget {{url}}
+      unzip {{filename}}
+      sudo rm {{filename}}         
+    with_items: "{{ find_matches.files }}"

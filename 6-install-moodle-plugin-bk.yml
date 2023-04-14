@@ -1,0 +1,32 @@
+---
+- hosts: web_servers
+  become: true
+  become_user: root
+
+  vars:
+    url: "https://moodle.org/plugins/download.php/28854/format_topcoll_moodle41_2022112601.zip"
+    filename: "{{ url | basename }}"
+  tasks:
+
+  - name: Check if directory exist
+    stat:
+      path: "/var/www/html/moodle/{{filename.split('_').0}}"
+    register: register_name
+
+  - name: Create directory if it doesnt exist
+    file:
+      path: "/var/www/html/moodle/{{filename.split('_').0}}"
+      state: directory
+      mode: 0755
+      group: www-data
+      owner: www-data
+    when: not register_name.stat.exists
+
+  - name: get/pull plugin
+    shell: |
+     cd /var/www/html/moodle/{{filename.split('_').0}}
+     wget {{url}}
+     unzip {{filename}}
+     sudo rm {{filename}}
+    args:
+     warn: no
