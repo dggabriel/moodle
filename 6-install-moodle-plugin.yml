@@ -5,7 +5,7 @@
 
   vars:
     url: "https://moodle.org/plugins/download.php/28571/mod_zoom_moodle41_2023021400.zip"
-    course_type: "mod"
+    plugin_type: "mod"
     filename: "{{ url | basename }}"
     foldername: "{{filename.split('_').0}}"
     search_path: "/var/www/html/moodle/"
@@ -15,7 +15,7 @@
     ansible.builtin.find:
       paths: "{{ search_path }}/"
       file_type: directory
-      patterns: "{{ course_type }}"
+      patterns: "{{ plugin_type }}"
       recurse: yes
     register: find_matches
 
@@ -26,8 +26,16 @@
 
   - name: install plugin
     shell: |
-      cd {{ item.path }}
-      wget {{url}}
-      unzip {{filename}}
-      sudo rm {{filename}}         
-    with_items: "{{ find_matches.files }}"
+     cd {{ find_matches.files[0].path }}
+     wget {{url}}
+     unzip {{filename}}
+     sudo rm {{filename}}
+    #with_items: "{{ find_matches.files }}"
+
+  #- name: install plugin
+    #shell: |
+      #cd {{ item.path }}
+      #wget {{url}}
+      #unzip {{filename}}
+      #sudo rm {{filename}}         
+    #with_items: "{{ find_matches.files }}"
