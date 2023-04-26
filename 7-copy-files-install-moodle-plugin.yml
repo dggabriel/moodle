@@ -1,0 +1,32 @@
+---
+- hosts: web_servers
+  become: true
+  become_user: root
+
+  vars:
+    filename: "moodle.zip"
+    folderloc: "/var/www/html/"
+  
+  tasks:
+  - name: remove current moodle folder
+    shell: |
+      sudo rm {{ filename }}
+      sudo rm -rf {{ folderloc }}moodle
+
+  - name: copy files
+    copy:
+     src: "~/{{ filename }}"
+     dest: "{{ folderloc }}"
+     mode: 0755
+     owner: www-data
+     group: www-data
+
+  - name: unzip and delete zip file
+    shell: |
+      cd {{ folderloc }}
+      unzip {{ filename }}
+      chmod 0755 {{ folderloc }}moodle
+      chown -R www-data:www-data {{ folderloc }}moodle
+      chown root:root {{ folderloc }}moodle/config.php
+      rm {{ filename }}         
+    
